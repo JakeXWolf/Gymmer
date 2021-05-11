@@ -1,1 +1,38 @@
+@import '~primeicons/primeicons.css';
+@import '~primeng/resources/themes/saga-blue/theme.css';
+@import '~primeng/resources/primeng.min.css';
+
 /* You can add global styles to this file, and also import other style files */
+html {
+    background-color: lightgray;
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+.p-inputnumber {
+    height: 33px;
+}
+.p-inputnumber-buttons-stacked .p-inputnumber-input {
+    width: 35px;
+}
+
+.setsCardWeight .p-inputnumber-buttons-stacked .p-inputnumber-input {
+    width: 50px;
+}
+
+.p-carousel .p-carousel-content .p-carousel-prev {
+    margin: 0 0 0 -0.5rem;
+}
+
+.p-carousel .p-carousel-content .p-carousel-next {
+    margin: 0 -0.5rem 0 0;
+}
+
+.p-carousel .p-carousel-indicators {
+    padding-bottom: 0%;
+}
+
+/* node_modules/primeicons/primeicons.css
+node_modules/primeng/resources/themes/saga-blue/theme.css
+node_modules/primeng/resources/primeng.min.css */

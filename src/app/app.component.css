@@ -1,0 +1,71 @@
+.workoutOverviewCard {
+    margin: 2%;
+    padding: 2%;
+    text-align: -webkit-center;
+}
+
+.createWorkoutCard {
+    margin: 2%;
+    padding: 2%;
+}
+
+.currentDayOverviewCard {
+    background-color: deepskyblue;
+    color: black;
+    width: 65%;
+    /* height: 150px; */
+    margin-bottom: 2%;
+}
+.currentDayOverviewCard mat-card-header {
+    display: contents;
+}
+
+.dayCard {
+    margin: .5%;
+    background-color: skyblue;
+}
+
+.editWorkoutCard {
+    width: -webkit-fill-available;
+    margin: 0 2% 2% 2%;
+}
+
+.exerciseCard {
+    margin-top: 2%;
+}
+
+.setsCard {
+    display: inline-flex;
+    margin: 1%;
+    width: -webkit-fill-available;
+}
+
+.carouselCard {
+    background-color: deepskyblue;
+    padding: 0;
+    border-radius: 4px !important;
+    margin: 0 5px 0 5px;
+}
+
+.carouselCardHeader {
+    background-color: red; 
+    display: block; 
+    border-radius: 4px 4px 0px 0px; 
+    padding: 4px 0 4px 0;
+    height: 2rem;
+}
+
+.carouselCardContent {
+    color: black;
+    background: deepskyblue;
+    box-shadow: none;
+    height: 3rem;
+}
+
+#centerContent {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
