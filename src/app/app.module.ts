@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -19,9 +20,11 @@ import {CarouselModule} from 'primeng/carousel';
 import {DropdownModule} from 'primeng/dropdown';
 import {InputTextModule} from 'primeng/inputtext';
 import {InputNumberModule} from 'primeng/inputnumber';
+import {InputSwitchModule} from 'primeng/inputswitch';
 import {TableModule} from 'primeng/table';
 
 import { FilterService } from 'primeng/api';
+import { ExerciseService } from './core/services/Exercise.service';
 
 @NgModule({
   declarations: [
@@ -34,9 +37,11 @@ import { FilterService } from 'primeng/api';
     DropdownModule,
     InputTextModule,
     InputNumberModule,
+    InputSwitchModule,
     TableModule,
 
     FormsModule,
+    HttpClientModule,
 
     MatCardModule,
     MatIconModule,
@@ -45,7 +50,9 @@ import { FilterService } from 'primeng/api';
     AppRoutingModule,
     BrowserAnimationsModule
   ],
-  providers: [FilterService],
+  providers: [
+    FilterService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

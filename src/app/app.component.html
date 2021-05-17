@@ -7,14 +7,14 @@
       <div>{{exercise.name}} - {{exercise.equipment}}</div>
     </div>
     <mat-card-content>
-      <button pButton pRipple type="button" label="Edit Workout" class="p-button-outlined p-button-secondary" style="color: black; margin: 3% 0 3% 0;"></button>
-      <button pButton pRipple type="button" label="Create New Workout" class="p-button-outlined p-button-secondary" style="color: black;"></button>
+      <button pButton pRipple type="button" label="Edit Workout" (click)="onEditWorkout()" class="p-button-outlined p-button-secondary" style="color: black; margin: 3% 0 3% 0;"></button>
+      <button pButton pRipple type="button" label="Create New Workout" (click)="onCreateNewWorkout()" class="p-button-outlined p-button-secondary" style="color: black;"></button>
     </mat-card-content>
   </mat-card>
   
   <p-carousel [value]="workoutDashboards" [numVisible]="3" [numScroll]="2">
     <ng-template let-workoutDashboard pTemplate="item">
-      <mat-card class="carouselCard">
+      <mat-card class="carouselCard" (click)="onOverviewCardSelection(workoutDashboard)">
         <mat-card-header class="carouselCardHeader">
           {{workoutDashboard.date}}
         </mat-card-header> 
@@ -28,7 +28,63 @@
   </p-carousel>
 </mat-card>
 
-<mat-card class="createWorkoutCard">
+
+<mat-card class="createWorkoutCard" *ngIf="isCreateWorkoutCard">
+  <mat-card-header>
+    <mat-card-title>Create Workout</mat-card-title>
+  </mat-card-header>
+
+  <div *ngIf="isAreaSelection">
+    <p-table [value]="areas" [(selection)]="selectedAreas" dataKey="id">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th>Name</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-area>
+        <tr>
+          <td>
+            <p-tableCheckbox [value]="area"></p-tableCheckbox>
+          </td>
+          <td>{{area.name}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <button pButton pRipple type="button" label="Next" (click)="onNextCreateWorkout()" class="p-button-outlined p-button-secondary" style="color: black; margin: 3% 0 3% 0;"></button>
+  </div>
+
+  <p-accordion [multiple]="true" *ngIf="isExerciseSelection">
+    <div *ngFor="let workout of workoutCreations">
+      <p-accordionTab [header]="workout.selectedArea.name">
+        <p-table [value]="workout.exerciseOptions" [(selection)]="selectedExerciseOptions" dataKey="exerciseId">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th>Exercise</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-exerciseOption>
+            <tr>
+              <td>
+                <p-tableCheckbox [value]="exerciseOption"></p-tableCheckbox>
+              </td>
+              <td>{{exerciseOption.name}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-accordionTab>
+    </div>
+  </p-accordion>
+</mat-card>
+
+<!-- 
+<mat-card class="createWorkoutCard" *ngIf="isCreateWorkoutCard">
   <mat-card-header>
     <mat-card-title>Create Workout</mat-card-title>
   </mat-card-header>
@@ -75,16 +131,22 @@
       </p-table>
     </p-accordionTab>
   </p-accordion>
-</mat-card>
+</mat-card> -->
 
-<mat-card class="editWorkoutCard">
+<mat-card class="editWorkoutCard" *ngIf="isShowWorkoutCard">
   <mat-card-header>
     <mat-card-title>Chest & Triceps</mat-card-title>
+    <p-inputSwitch [(ngModel)]="isWorkoutEditable"></p-inputSwitch>
   </mat-card-header>
   <div *ngFor="let exercise of currentWorkout.exercises">
     <mat-card class="exerciseCard" style="background-color: deepskyblue;">
-      <p-dropdown [options]="exerciseOptions" [(ngModel)]="exercise.exerciseOption" placeholder="Select an Exercise" optionLabel="name"></p-dropdown>
-      <p-dropdown [options]="exercise.exerciseOption.equipment" [(ngModel)]="exercise.equipment" placeholder="Select Equipment"></p-dropdown>
+      <div *ngIf="isWorkoutEditable">
+        <p-dropdown [options]="exerciseOptions" [(ngModel)]="exercise.exerciseOption" placeholder="Select an Exercise" optionLabel="name"></p-dropdown>
+        <p-dropdown [options]="exercise.exerciseOption.equipment" [(ngModel)]="exercise.equipment" placeholder="Select Equipment"></p-dropdown>
+      </div>
+      <div *ngIf="!isWorkoutEditable">
+        {{exercise.exerciseOption.name}} - {{exercise.equipment}}
+      </div>
       <div>
         Sets: 
         <p-inputNumber [(ngModel)]="exercise.numberOfSets" [showButtons]="true" [min]="0" (onInput)="exercise.SetChange()"></p-inputNumber>
@@ -105,4 +167,7 @@
       </div>
     </mat-card>
   </div>
+
+  <button pButton pRipple type="button" label="+ Add Exercise" (click)="onAddExercise()" *ngIf="isWorkoutEditable" class="p-button-outlined p-button-secondary" style="color: black; margin: 3% 0 3% 0;"></button>
+  <button pButton pRipple type="button" label="Start Workout" (click)="onAddExercise()" *ngIf="!isWorkoutEditable" class="p-button-outlined p-button-secondary" style="color: black; margin: 3% 0 3% 0;"></button>
 </mat-card>

@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Workout } from './core/models/Workout';
-import { Exercise } from './core/models/Exercise';
-import { ExerciseOption } from './core/models/ExerciseOption';
 import { DropdownModule } from 'primeng/dropdown';
 import { FilterService } from 'primeng/api';
+
+import { Area } from './core/models/Area';
+import { Exercise } from './core/models/Exercise';
+import { ExerciseOption } from './core/models/ExerciseOption';
+import { Workout } from './core/models/Workout';
+import { WorkoutCreation } from './core/models/WorkoutCreation';
+
+import { ExerciseService } from './core/services/Exercise.service';
 
 @Component({
   selector: 'app-root',
@@ -14,17 +19,73 @@ export class AppComponent implements OnInit {
   title = 'gymmer';
   workoutDashboards: any;
   currentWorkout: Workout = new Workout();
-  exerciseOptions: ExerciseOption[] = [];
-  selectedExerciseOptions: ExerciseOption[] = [];
+  
+  isCreateWorkoutCard: boolean = false;
+  isShowWorkoutCard: boolean = false;
 
-  chestExercises: ExerciseOption[] = [];
-  tricepExercises: ExerciseOption[] = [];
-
-  constructor(private filterService: FilterService) {}
+  constructor(private filterService: FilterService, private exerciseService: ExerciseService) {}
 
   ngOnInit() {
     this.getFakeData();
   }
+  
+  //#region Overview
+  
+  onEditWorkout() {
+    this.isCreateWorkoutCard = false;
+    this.isShowWorkoutCard = true;
+  }
+  
+  onCreateNewWorkout() {
+    this.isShowWorkoutCard = false;
+    this.isCreateWorkoutCard = true;
+    this.isAreaSelection = true;
+    this.isExerciseSelection = false;
+    this.getAreas();
+  }
+  
+  onOverviewCardSelection(workoutDashboard: any) {
+    console.log('onOverviewCardSelection', workoutDashboard);
+  }
+  
+  //#endregion Overview
+
+  //#region Create Workout
+  isAreaSelection: boolean = false;
+  isExerciseSelection: boolean = false;
+
+  areas: Area[] = [];
+  selectedAreas: Area[] = [];
+  workoutCreations: WorkoutCreation[];
+
+  getAreas() {
+    this.areas = this.exerciseService.getAreas();
+  }
+
+  onNextCreateWorkout() {
+    this.workoutCreations = this.exerciseService.getWorkoutCreations(this.selectedAreas);
+    this.isAreaSelection = false;
+    this.isExerciseSelection = true;
+  }
+
+  //#endregion
+
+  //#region Workout
+
+  exerciseOptions: ExerciseOption[] = [];
+  selectedExerciseOptions: ExerciseOption[] = [];
+  
+  chestExercises: ExerciseOption[] = [];
+  tricepExercises: ExerciseOption[] = [];
+
+  isWorkoutEditable: boolean = false;
+
+  onAddExercise() {
+    console.log('onAddExercise');
+    this.currentWorkout.exercises.push(new Exercise());
+  }
+
+  //#endregion Workout
 
   getFakeData() {
     this.currentWorkout = new Workout();
@@ -57,6 +118,8 @@ export class AppComponent implements OnInit {
     tmpExercise1.numberOfReps = 8;
     tmpExercise1.isPyramid = false;
 
+    tmpExercise1.exerciseOption.name = tmpExercise1.name;
+
     this.currentWorkout.exercises.push(tmpExercise1);
 
     tmpExercise2.name = 'Incline Bench Press';
@@ -78,6 +141,8 @@ export class AppComponent implements OnInit {
     tmpExercise2.numberOfSets = 3;
     tmpExercise2.numberOfReps = 8;
     tmpExercise2.isPyramid = false;
+    
+    tmpExercise2.exerciseOption.name = tmpExercise2.name;
 
     this.currentWorkout.exercises.push(tmpExercise2);
 
@@ -100,6 +165,9 @@ export class AppComponent implements OnInit {
         weight: 10
       },
     ];
+
+    
+    tmpExercise3.exerciseOption.name = tmpExercise3.name;
 
     this.currentWorkout.exercises.push(tmpExercise3);
 
