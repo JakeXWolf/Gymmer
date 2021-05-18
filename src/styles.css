@@ -38,6 +38,28 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     color: white;
 }
 
+.p-accordion .p-accordion-header .p-accordion-header-link {
+    background: deepskyblue !important;
+}
+
+.p-accordion .p-accordion-content {
+    background-color: skyblue;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+    color: white;
+    background-color: #424242;
+}
+
+.areaSelection .p-datatable .p-datatable-thead > tr > th {
+    border-radius: 5px;
+    border-color: deepskyblue;
+}
+
+.workoutCard .mat-card-header-text {
+    flex: 1;
+}
+
 /* node_modules/primeicons/primeicons.css
 node_modules/primeng/resources/themes/saga-blue/theme.css
 node_modules/primeng/resources/primeng.min.css */

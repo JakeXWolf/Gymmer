@@ -1,3 +1,13 @@
+.spacer {
+    flex: 1 1 auto;
+}
+
+.toolbar button {
+    color: white;
+    background: transparent;
+    border-color: transparent;
+}
+
 .workoutOverviewCard {
     margin: 2%;
     padding: 2%;
@@ -7,6 +17,7 @@
 .createWorkoutCard {
     margin: 2%;
     padding: 2%;
+    text-align: center;
 }
 
 .currentDayOverviewCard {
@@ -25,7 +36,7 @@
     background-color: skyblue;
 }
 
-.editWorkoutCard {
+.workoutCard {
     width: -webkit-fill-available;
     margin: 0 2% 2% 2%;
 }
@@ -68,4 +79,17 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.timerFooter {
+    position:fixed;
+    bottom:0;
+    color: white;
+    justify-content: center;
+}
+
+.timerFooter button {
+    color: white;
+    background: transparent;
+    border-color: transparent;
 }

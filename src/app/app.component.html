@@ -1,13 +1,27 @@
+<mat-toolbar class="toolbar">
+  <button mat-icon-button aria-label="Menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span style="padding-left: 2px;">Gymmer</span>
+  <span class="spacer"></span>
+  <button mat-icon-button aria-label="Account Information">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <button mat-icon-button aria-label="Share media">
+    <mat-icon>share</mat-icon>
+  </button>
+</mat-toolbar>
+
 <mat-card class="workoutOverviewCard">
   <mat-card class="currentDayOverviewCard">
     <mat-card-header>
-      <mat-card-title>{{currentWorkout.muscleGroupHeader}}</mat-card-title>
+      <mat-card-title>{{currentWorkout.areaHeader}}</mat-card-title>
     </mat-card-header>
     <div *ngFor="let exercise of currentWorkout.exercises">
       <div>{{exercise.name}} - {{exercise.equipment}}</div>
     </div>
     <mat-card-content>
-      <button pButton pRipple type="button" label="Edit Workout" (click)="onEditWorkout()" class="p-button-outlined p-button-secondary" style="color: black; margin: 3% 0 3% 0;"></button>
+      <button pButton pRipple type="button" label="Go To Workout" (click)="onEditWorkout()" class="p-button-outlined p-button-secondary" style="color: black; margin: 3% 0 3% 0;"></button>
       <button pButton pRipple type="button" label="Create New Workout" (click)="onCreateNewWorkout()" class="p-button-outlined p-button-secondary" style="color: black;"></button>
     </mat-card-content>
   </mat-card>
@@ -34,14 +48,12 @@
     <mat-card-title>Create Workout</mat-card-title>
   </mat-card-header>
 
-  <div *ngIf="isAreaSelection">
+  <div *ngIf="isAreaSelection" class="areaSelection">
     <p-table [value]="areas" [(selection)]="selectedAreas" dataKey="id">
       <ng-template pTemplate="header">
         <tr>
-          <th style="width: 3rem">
-            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-          </th>
-          <th>Name</th>
+          <th style="width: 3rem"></th>
+          <th style="text-align: center;">Areas</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-area>
@@ -54,34 +66,97 @@
       </ng-template>
     </p-table>
 
-    <button pButton pRipple type="button" label="Next" (click)="onNextCreateWorkout()" class="p-button-outlined p-button-secondary" style="color: black; margin: 3% 0 3% 0;"></button>
+    <button pButton pRipple type="button" label="Next" (click)="onNextAfterAreas()" class="p-button-outlined p-button-secondary" style="color: deepskyblue; margin: 3% 0 3% 0;"></button>
   </div>
 
-  <p-accordion [multiple]="true" *ngIf="isExerciseSelection">
-    <div *ngFor="let workout of workoutCreations">
-      <p-accordionTab [header]="workout.selectedArea.name">
-        <p-table [value]="workout.exerciseOptions" [(selection)]="selectedExerciseOptions" dataKey="exerciseId">
-          <ng-template pTemplate="header">
-            <tr>
-              <th style="width: 3rem">
-                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-              </th>
-              <th>Exercise</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-exerciseOption>
-            <tr>
-              <td>
-                <p-tableCheckbox [value]="exerciseOption"></p-tableCheckbox>
-              </td>
-              <td>{{exerciseOption.name}}</td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </p-accordionTab>
-    </div>
-  </p-accordion>
+  <div *ngIf="isExerciseSelection">
+    <p-accordion [multiple]="true">
+      <div *ngFor="let workout of workoutCreations">
+        <p-accordionTab [header]="workout.selectedArea.name">
+          <p-table [value]="workout.exerciseOptions" [(selection)]="selectedExerciseOptions" dataKey="exerciseId">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 3rem">
+                  <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th>Exercise</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-exerciseOption>
+              <tr>
+                <td>
+                  <p-tableCheckbox [value]="exerciseOption"></p-tableCheckbox>
+                </td>
+                <td>{{exerciseOption.name}}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-accordionTab>
+      </div>
+    </p-accordion>
+
+    <button pButton pRipple type="button" label="Next" (click)="onNextAfterExercises()" class="p-button-outlined p-button-secondary" style="color: deepskyblue; margin: 3% 0 3% 0;"></button>
+  </div>
 </mat-card>
+
+<!-- Workout Card -->
+<mat-card class="workoutCard" id="workoutCard" *ngIf="isShowWorkoutCard">
+  <mat-card-header style="display: flex;">
+    <mat-card-title class="workoutTitle">{{currentWorkout.areaHeader}}</mat-card-title>
+    <div style="flex: 1; display: contents;">
+      <div style="margin-right: 2px;">Edit </div> 
+      <p-inputSwitch [(ngModel)]="isWorkoutEditable"></p-inputSwitch>
+    </div>
+  </mat-card-header>
+  <div *ngFor="let exercise of currentWorkout.exercises">
+    <mat-card class="exerciseCard" style="background-color: deepskyblue;">
+      <div *ngIf="isWorkoutEditable">
+        <p-dropdown [options]="exerciseOptions" [(ngModel)]="exercise" placeholder="Select an Exercise" optionLabel="name" dataKey="name"></p-dropdown>
+        <p-dropdown [options]="exercise.equipment" [(ngModel)]="exercise.selectedEquipment" placeholder="Select Equipment"></p-dropdown>
+      </div>
+      <div *ngIf="!isWorkoutEditable">
+        {{exercise.name}} - {{exercise.selectedEquipment}}
+      </div>
+      <div>
+        Sets: 
+        <p-inputNumber [(ngModel)]="exercise.numberOfSets" [showButtons]="true" [min]="0" (onInput)="exercise.SetChange()"></p-inputNumber>
+        Reps: 
+        <p-inputNumber [(ngModel)]="exercise.numberOfReps" [showButtons]="true" [min]="0" (onInput)="exercise.RepChange()"></p-inputNumber>
+      </div>
+      <div *ngFor="let set of exercise.sets">
+        <mat-card class="setsCard">
+          <div style="flex: 4;">
+            Reps: 
+            <p-inputNumber [(ngModel)]="set.reps" [showButtons]="true" [min]="0"></p-inputNumber>
+          </div>
+          <div class="setsCardWeight" style="flex: 5;">
+            Weight: 
+            <p-inputNumber [(ngModel)]="set.weight" [showButtons]="true" [min]="0"></p-inputNumber>
+          </div>
+        </mat-card>
+      </div>
+    </mat-card>
+  </div>
+
+  <div style="text-align: center;">
+    <button pButton pRipple type="button" label="+ Add Exercise" (click)="onAddExercise()" *ngIf="isWorkoutEditable" class="p-button-outlined p-button-secondary" style="color: deepskyblue; margin: 3% 0 0 0;"></button>
+    <button pButton pRipple type="button" label="Start Workout" (click)="onStartWorkout()" *ngIf="!isWorkoutEditable && !isWorkingOut" class="p-button-outlined p-button-secondary" style="color: deepskyblue; margin: 3% 0 0 0;"></button>
+    <button pButton pRipple type="button" label="Complete Workout" (click)="onCompleteWorkout()" *ngIf="!isWorkoutEditable && isWorkingOut" class="p-button-outlined p-button-secondary" style="color: deepskyblue; margin: 3% 0 0 0;"></button>
+  </div>
+</mat-card>
+
+<div *ngIf="!isWorkingOut" style="height: 2%;"></div>
+<div *ngIf="isWorkingOut" style="height: 56px;"></div>
+
+<mat-toolbar class="timerFooter" *ngIf="isWorkingOut">
+  <div>{{ timerDisplay.hours.digit1 }} {{ timerDisplay.hours.digit2 }} : {{ timerDisplay.minutes.digit1 }} {{ timerDisplay.minutes.digit2 }} : {{ timerDisplay.seconds.digit1 }} {{ timerDisplay.seconds.digit2 }}</div>
+  <button mat-icon-button aria-label="Pause the Workout Timer" (click)="onPauseWorkoutTimer()" *ngIf="isRunning">
+    <mat-icon>pause</mat-icon>
+  </button>
+  <button mat-icon-button aria-label="Resume the Workout Timer" (click)="onResumeWorkoutTimer()" *ngIf="!isRunning">
+    <mat-icon>play_arrow</mat-icon>
+  </button>
+</mat-toolbar>
 
 <!-- 
 <mat-card class="createWorkoutCard" *ngIf="isCreateWorkoutCard">
@@ -132,7 +207,7 @@
     </p-accordionTab>
   </p-accordion>
 </mat-card> -->
-
+<!-- 
 <mat-card class="editWorkoutCard" *ngIf="isShowWorkoutCard">
   <mat-card-header>
     <mat-card-title>Chest & Triceps</mat-card-title>
@@ -170,4 +245,4 @@
 
   <button pButton pRipple type="button" label="+ Add Exercise" (click)="onAddExercise()" *ngIf="isWorkoutEditable" class="p-button-outlined p-button-secondary" style="color: black; margin: 3% 0 3% 0;"></button>
   <button pButton pRipple type="button" label="Start Workout" (click)="onAddExercise()" *ngIf="!isWorkoutEditable" class="p-button-outlined p-button-secondary" style="color: black; margin: 3% 0 3% 0;"></button>
-</mat-card>
+</mat-card> -->

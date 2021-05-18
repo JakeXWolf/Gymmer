@@ -12,7 +12,7 @@ import { MatCardModule, MatFormFieldModule,
   MatIconModule, MatListModule, MatGridListModule,
   MatCheckboxModule, MatOptionModule,
   MatSelectModule, MatSliderModule,
-  MatDialogModule } from '@angular/material';
+  MatDialogModule, MatToolbarModule } from '@angular/material';
 
 import {AccordionModule} from 'primeng/accordion';
 import {ButtonModule} from 'primeng/button';
@@ -45,6 +45,7 @@ import { ExerciseService } from './core/services/Exercise.service';
 
     MatCardModule,
     MatIconModule,
+    MatToolbarModule,
 
     BrowserModule,
     AppRoutingModule,

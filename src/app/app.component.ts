@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ElementRef } from '@angular/core';
+
 import { DropdownModule } from 'primeng/dropdown';
 import { FilterService } from 'primeng/api';
 
@@ -9,6 +11,8 @@ import { Workout } from './core/models/Workout';
 import { WorkoutCreation } from './core/models/WorkoutCreation';
 
 import { ExerciseService } from './core/services/Exercise.service';
+
+import { timer, Subscription } from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -23,7 +27,7 @@ export class AppComponent implements OnInit {
   isCreateWorkoutCard: boolean = false;
   isShowWorkoutCard: boolean = false;
 
-  constructor(private filterService: FilterService, private exerciseService: ExerciseService) {}
+  constructor(private filterService: FilterService, private exerciseService: ExerciseService, private myElement: ElementRef) {}
 
   ngOnInit() {
     this.getFakeData();
@@ -62,10 +66,26 @@ export class AppComponent implements OnInit {
     this.areas = this.exerciseService.getAreas();
   }
 
-  onNextCreateWorkout() {
+  onNextAfterAreas() {
     this.workoutCreations = this.exerciseService.getWorkoutCreations(this.selectedAreas);
     this.isAreaSelection = false;
     this.isExerciseSelection = true;
+  }
+
+  onNextAfterExercises() {
+    this.isCreateWorkoutCard = false;
+    this.isAreaSelection = false;
+    this.isExerciseSelection = false;
+    this.isWorkoutEditable = true;
+    this.isShowWorkoutCard = true;
+
+    this.currentWorkout = new Workout();
+    this.currentWorkout.setWorkout(this.selectedAreas, this.selectedExerciseOptions);
+
+    this.exerciseOptions = [];
+    this.workoutCreations.forEach(x => {
+      this.exerciseOptions = this.exerciseOptions.concat(x.exerciseOptions);
+    })
   }
 
   //#endregion
@@ -79,11 +99,73 @@ export class AppComponent implements OnInit {
   tricepExercises: ExerciseOption[] = [];
 
   isWorkoutEditable: boolean = false;
+  
+  isWorkingOut: boolean = false;
+  isRunning: boolean = false;
+  time: number = 0;
+  timerDisplay: any = {
+    hours: { digit1: 0, digit2: 0 },
+    minutes: { digit1: 0, digit2: 0 },
+    seconds: { digit1: 0, digit2: 0 },
+  };
+
+  timerSub: Subscription;
 
   onAddExercise() {
     console.log('onAddExercise');
     this.currentWorkout.exercises.push(new Exercise());
   }
+
+  onStartWorkout() {
+    this.isWorkingOut = true;
+    this.time = 0;
+    this.startTimer();
+    this.myElement.nativeElement.ownerDocument.getElementById('workoutCard').scrollIntoView({behavior: 'smooth'});
+  }
+
+  startTimer() {
+    this.isRunning = true;
+
+    this.timerSub = timer(0, 1000).subscribe(ellapsedCycles => {
+      if(this.isRunning) {
+        this.time++;
+        this.timerDisplay = this.getDisplayTimer(this.time);
+      }
+    });
+  }
+  
+  getDisplayTimer(time: number) {
+    const hours = '0' + Math.floor(time / 3600);
+    const minutes = '0' + Math.floor(time % 3600 / 60);
+    const seconds = '0' + Math.floor(time % 3600 % 60);
+
+    return {
+      hours: { digit1: hours.slice(-2, -1), digit2: hours.slice(-1) },
+      minutes: { digit1: minutes.slice(-2, -1), digit2: minutes.slice(-1) },
+      seconds: { digit1: seconds.slice(-2, -1), digit2: seconds.slice(-1) },
+    };
+  }
+
+  onPauseWorkoutTimer() {
+    this.isRunning = false;
+    this.timerSub.unsubscribe();
+  }
+
+  onResumeWorkoutTimer() {
+    this.startTimer();
+  }
+
+  onCompleteWorkout() {
+    this.isWorkingOut = false;
+    this.isRunning = false;
+    this.timerSub.unsubscribe();
+
+    // TODO: setup something for when workout is finished
+    this.saveWorkout();
+  }
+
+  // TODO: save workout
+  saveWorkout() { }
 
   //#endregion Workout
 
@@ -95,11 +177,11 @@ export class AppComponent implements OnInit {
 
     this.currentWorkout.workoutId = 1;
     this.currentWorkout.date = new Date();
-    this.currentWorkout.muscleGroupHeader = 'Chest & Triceps';
-    this.currentWorkout.muscleGroups = ['Chest','Triceps'];
+    this.currentWorkout.areaHeader = 'Chest & Triceps';
+    this.currentWorkout.areas = [{name: 'Chest', id: 1 },{name: 'Triceps', id: 1 }];
 
     tmpExercise1.name = 'Bench Press';
-    tmpExercise1.equipment = 'Barbell';
+    tmpExercise1.selectedEquipment = 'Barbell';
     tmpExercise1.sets = [
       {
         reps: 8,
@@ -118,12 +200,12 @@ export class AppComponent implements OnInit {
     tmpExercise1.numberOfReps = 8;
     tmpExercise1.isPyramid = false;
 
-    tmpExercise1.exerciseOption.name = tmpExercise1.name;
+    tmpExercise1.name = tmpExercise1.name;
 
     this.currentWorkout.exercises.push(tmpExercise1);
 
     tmpExercise2.name = 'Incline Bench Press';
-    tmpExercise2.equipment = 'Barbell';
+    tmpExercise2.selectedEquipment = 'Barbell';
     tmpExercise2.sets = [
       {
         reps: 8,
@@ -142,12 +224,12 @@ export class AppComponent implements OnInit {
     tmpExercise2.numberOfReps = 8;
     tmpExercise2.isPyramid = false;
     
-    tmpExercise2.exerciseOption.name = tmpExercise2.name;
+    tmpExercise2.name = tmpExercise2.name;
 
     this.currentWorkout.exercises.push(tmpExercise2);
 
     tmpExercise3.name = 'Fly'
-    tmpExercise3.equipment = 'Resistance Band'
+    tmpExercise3.selectedEquipment = 'Resistance Band'
     tmpExercise3.numberOfSets = 3
     tmpExercise3.numberOfReps = 15
     tmpExercise3.isPyramid = false
@@ -167,7 +249,7 @@ export class AppComponent implements OnInit {
     ];
 
     
-    tmpExercise3.exerciseOption.name = tmpExercise3.name;
+    tmpExercise3.name = tmpExercise3.name;
 
     this.currentWorkout.exercises.push(tmpExercise3);
 
