@@ -30,6 +30,7 @@ export class AppComponent implements OnInit {
   constructor(private filterService: FilterService, private exerciseService: ExerciseService, private myElement: ElementRef) {}
 
   ngOnInit() {
+    this.getAreas();
     this.getFakeData();
   }
   
@@ -63,7 +64,12 @@ export class AppComponent implements OnInit {
   workoutCreations: WorkoutCreation[];
 
   getAreas() {
-    this.areas = this.exerciseService.getAreas();
+    this.exerciseService.getAreas().subscribe(
+      res => {
+        console.log(res);
+        this.areas = res as Array<Area>;
+      }
+    )
   }
 
   onNextAfterAreas() {
